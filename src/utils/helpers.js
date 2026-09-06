@@ -154,6 +154,32 @@ export const getTopExpenses = (transactions, limit = 10) => {
     .slice(0, limit);
 };
 
+export const getCreditDebitSummary = (transactions) => {
+  let credit = 0;
+  let debit = 0;
+  let creditCount = 0;
+  let debitCount = 0;
+  transactions.forEach(t => {
+    if (t.type === 'Income') {
+      credit += t.amount;
+      creditCount += 1;
+    } else {
+      debit += t.amount;
+      debitCount += 1;
+    }
+  });
+  const total = credit + debit;
+  return {
+    credit,
+    debit,
+    creditCount,
+    debitCount,
+    netFlow: credit - debit,
+    creditShare: total > 0 ? (credit / total) * 100 : 0,
+    debitShare: total > 0 ? (debit / total) * 100 : 0,
+  };
+};
+
 export const getSavingsRate = (transactions) => {
   const stats = getTotalStats(transactions);
   const total = stats.totalSpent + stats.totalSaved;

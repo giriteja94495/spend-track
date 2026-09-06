@@ -4,7 +4,7 @@ import { categories, paymentModes, types } from './data/transactions';
 import {
   formatCurrency, getTotalStats, getCategoryBreakdown, getTypeBreakdown,
   getPaymentModeBreakdown, getMonthlyTrends, getTopExpenses, getSavingsRate,
-  getCategoryInfo, getAvailableMonths, monthLabel as monthLabelFromKey, filterByMonth
+  getCategoryInfo, getAvailableMonths, monthLabel as monthLabelFromKey, filterByMonth, getCreditDebitSummary
 } from './utils/helpers';
 import { StatCard, MetricCard } from './components/ui/StatCards';
 import { CategoryDoughnutChart, TypeDoughnutChart, MonthlyTrendChart, MonthlyBarChart, PaymentModeChart, SavingsProgressChart } from './components/charts/Charts';
@@ -12,6 +12,7 @@ import { TransactionTable } from './components/transactions/TransactionTable';
 import { AddTransactionModal } from './components/transactions/AddTransactionModal';
 import { CategoryBreakdown } from './components/dashboard/CategoryBreakdown';
 import { Insights } from './components/dashboard/Insights';
+import { CreditDebitSummary } from './components/dashboard/CreditDebitSummary';
 import { MonthFilter } from './components/ui/MonthFilter';
 
 async function api(url, options = {}) {
@@ -53,6 +54,7 @@ function App() {
   const monthlyTrends = useMemo(() => getMonthlyTrends(transactions), [transactions]);
   const savingsRate = useMemo(() => getSavingsRate(filtered), [filtered]);
   const topExpenses = useMemo(() => getTopExpenses(filtered, 5), [filtered]);
+  const creditDebit = useMemo(() => getCreditDebitSummary(filtered), [filtered]);
 
   const headerMonthLabel = selectedMonth === 'all'
     ? 'All time'
@@ -124,7 +126,7 @@ function App() {
             <p className="text-sm text-dark-500">Loading your finances...</p>
           </div>
         ) : activeTab === 'overview' ? (
-          <Overview stats={stats} categoryData={categoryData} typeData={typeData} paymentData={paymentData} savingsRate={savingsRate} transactions={filtered} topExpenses={topExpenses} monthLabel={headerMonthLabel} savingsData={{ saved: stats.totalSaved, spent: stats.totalSpent }} />
+          <Overview stats={stats} categoryData={categoryData} typeData={typeData} paymentData={paymentData} savingsRate={savingsRate} transactions={filtered} topExpenses={topExpenses} monthLabel={headerMonthLabel} savingsData={{ saved: stats.totalSaved, spent: stats.totalSpent }} creditDebit={creditDebit} />
         ) : activeTab === 'analytics' ? (
           <Analytics categoryData={categoryData} typeData={typeData} paymentData={paymentData} monthlyTrends={monthlyTrends} stats={stats} />
         ) : (
@@ -249,7 +251,7 @@ function StatMiniCard({ icon: Icon, label, value, color }) {
   );
 }
 
-function Overview({ stats, categoryData, typeData, savingsRate, transactions, topExpenses, monthLabel, savingsData }) {
+function Overview({ stats, categoryData, typeData, savingsRate, transactions, topExpenses, monthLabel, savingsData, creditDebit }) {
   return (
     <div className="space-y-8 animate-fade-in">
       <section>
@@ -264,7 +266,7 @@ function Overview({ stats, categoryData, typeData, savingsRate, transactions, to
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <CategoryDoughnutChart data={categoryData} title="Spending by Category" />
+          <CreditDebitSummary summary={creditDebit} />
         </div>
         <SavingsProgressChart saved={savingsData.saved} spent={savingsData.spent} title="Savings vs Spending" />
       </section>
