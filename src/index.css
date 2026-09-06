@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+  }
+
+  * {
+    @apply border-dark-200;
+  }
+
+  body {
+    @apply bg-dark-50 text-dark-900 antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl;
+  }
+
+  .glass-dark {
+    @apply bg-dark-900/80 backdrop-blur-xl border border-dark-700/50 shadow-xl;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-lg shadow-primary-500/25 active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-dark-700 hover:bg-dark-50 focus:ring-dark-500 border border-dark-200 shadow-sm active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-dark-600 hover:bg-dark-100 focus:ring-dark-500 active:scale-[0.98];
+  }
+
+  .card {
+    @apply glass rounded-2xl p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-dark-200 bg-white px-4 py-2.5 text-sm text-dark-900 placeholder:text-dark-400 transition-all duration-200 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply badge bg-primary-50 text-primary-700 border border-primary-100;
+  }
+
+  .badge-warning {
+    @apply badge bg-amber-50 text-amber-700 border border-amber-100;
+  }
+
+  .badge-danger {
+    @apply badge bg-red-50 text-red-700 border border-red-100;
+  }
+
+  .badge-info {
+    @apply badge bg-blue-50 text-blue-700 border border-blue-100;
+  }
+
+  .badge-purple {
+    @apply badge bg-purple-50 text-purple-700 border border-purple-100;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-600 to-emerald-600 bg-clip-text text-transparent;
+  }
+
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, #22c55e, #10b981) border-box;
+    border: 1px solid transparent;
+  }
+}
