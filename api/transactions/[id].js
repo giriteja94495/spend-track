@@ -1,12 +1,6 @@
-import { isAuthed } from '../_lib/auth.js';
 import { getTransactions, saveTransactions } from '../_lib/store.js';
 
 export default async function handler(req, res) {
-  if (!isAuthed(req)) {
-    res.status(401).json({ error: 'unauthorized' });
-    return;
-  }
-
   const id = Number(req.query.id);
   const db = await getTransactions();
   const idx = db.findIndex((x) => x.id === id);
