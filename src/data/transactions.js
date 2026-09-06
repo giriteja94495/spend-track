@@ -135,9 +135,14 @@ export const transactions = [
   { date: "Wed, 5 Aug 2026", description: "Money transfer to amazon pay wallet", category: "Life Infrastructure", amount: 500, paymentMode: "UPI", type: "Need", notes: "Money transfer to wallet" },
   { date: "Wed, 5 Aug 2026", description: "Chair for mom", category: "Donation & Generosity", amount: 1450, paymentMode: "Credit Card", type: "Need", notes: "Special chair for mom" },
   { date: "Wed, 5 Aug 2026", description: "Rosemary hair oil", category: "Performance & Growth", amount: 500, paymentMode: "Credit Card", type: "Need", notes: "Hair oil" },
+  { date: "Sun, 28 Jun 2026", description: "Salary credited", category: "Salary & Income", amount: 100000, paymentMode: "Bank Transfer", type: "Income", notes: "Monthly salary" },
+  { date: "Tue, 28 Jul 2026", description: "Salary credited", category: "Salary & Income", amount: 100000, paymentMode: "Bank Transfer", type: "Income", notes: "Monthly salary" },
+  { date: "Fri, 28 Aug 2026", description: "Salary credited", category: "Salary & Income", amount: 100000, paymentMode: "Bank Transfer", type: "Income", notes: "Monthly salary" },
+  { date: "Mon, 28 Sep 2026", description: "Salary credited", category: "Salary & Income", amount: 100000, paymentMode: "Bank Transfer", type: "Income", notes: "Monthly salary" },
 ];
 
 export const categories = [
+  { id: "Salary & Income", name: "Salary & Income", icon: "Wallet", color: "amber", description: "Salary, refunds, credit received" },
   { id: "Future Me", name: "Future Me", icon: "Target", color: "primary", description: "Savings & Investments for future" },
   { id: "Lifestyle Enjoyment", name: "Lifestyle Enjoyment", icon: "Coffee", color: "pink", description: "Fun, food, entertainment" },
   { id: "Life Infrastructure", name: "Life Infrastructure", icon: "Home", color: "blue", description: "Essential living expenses" },

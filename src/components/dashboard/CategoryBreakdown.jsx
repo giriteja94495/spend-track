@@ -1,7 +1,7 @@
-import { Heart, Home, Target, Coffee, TrendingUp, Key, PiggyBank, Repeat, Utensils, ShoppingBasket, Car, Zap, HeartPulse, GraduationCap, Film, ShoppingBag, Plane, Scissors, ShieldCheck, Users, MoreHorizontal } from 'lucide-react';
+import { Heart, Home, Target, Coffee, TrendingUp, Key, PiggyBank, Repeat, Utensils, ShoppingBasket, Car, Zap, HeartPulse, GraduationCap, Film, ShoppingBag, Plane, Scissors, ShieldCheck, Users, MoreHorizontal, Wallet } from 'lucide-react';
 import { formatCurrency } from '../../utils/helpers';
 
-const iconMap = { Heart, Home, Target, Coffee, TrendingUp, Key, PiggyBank, Repeat, Utensils, ShoppingBasket, Car, Zap, HeartPulse, GraduationCap, Film, ShoppingBag, Plane, Scissors, ShieldCheck, Users, MoreHorizontal };
+const iconMap = { Heart, Home, Target, Coffee, TrendingUp, Key, PiggyBank, Repeat, Utensils, ShoppingBasket, Car, Zap, HeartPulse, GraduationCap, Film, ShoppingBag, Plane, Scissors, ShieldCheck, Users, MoreHorizontal, Wallet };
 
 const colorMap = {
   primary: 'bg-primary-100 text-primary-700',
