@@ -110,8 +110,8 @@ export const AddTransactionModal = ({ isOpen, onClose, onAdd, onUpdate, editingT
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="min-w-0">
               <label className={labelClass}>
                 <Calendar className="w-3.5 h-3.5 inline mr-1 text-dark-400" /> Date *
               </label>
@@ -123,7 +123,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAdd, onUpdate, editingT
                 required
               />
             </div>
-            <div>
+            <div className="min-w-0">
               <label className={labelClass}>Amount (₹) *</label>
               <input
                 type="number"
@@ -152,8 +152,8 @@ export const AddTransactionModal = ({ isOpen, onClose, onAdd, onUpdate, editingT
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="min-w-0">
               <label className={labelClass}>
                 <Tag className="w-3.5 h-3.5 inline mr-1 text-dark-400" /> Category
               </label>
@@ -167,7 +167,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAdd, onUpdate, editingT
                 ))}
               </select>
             </div>
-            <div>
+            <div className="min-w-0">
               <label className={labelClass}>Type</label>
               <select
                 value={form.type}
