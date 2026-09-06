@@ -1,7 +1,19 @@
-'use client';
+import { useEffect, useState } from 'react';
+import { X, Plus, Calendar, FileText, Tag, Wallet, Save } from 'lucide-react';
 
-import { useState } from 'react';
-import { X, Plus, Calendar, FileText, Tag, Wallet, ArrowDownCircle } from 'lucide-react';
+const formattedToInput = (dateStr) => {
+  if (!dateStr) return '';
+  const parts = dateStr.split(' ');
+  if (parts.length < 4) return '';
+  const days = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  const months = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12' };
+  const day = days[parts[0]];
+  const dayNum = parts[1].replace(',', '').padStart(2, '0');
+  const month = months[parts[2]];
+  const year = parts[3];
+  if (day === undefined || !month) return '';
+  return `${year}-${month}-${dayNum}`;
+};
 
 const toFormattedDate = (isoDate) => {
   if (!isoDate) return '';
@@ -12,7 +24,9 @@ const toFormattedDate = (isoDate) => {
   return `${days[date.getDay()]}, ${String(d).padStart(2, '0')} ${months[m - 1]} ${y}`;
 };
 
-export const AddTransactionModal = ({ isOpen, onClose, onAdd, categories, paymentModes, types }) => {
+export const AddTransactionModal = ({ isOpen, onClose, onAdd, onUpdate, editingTransaction, categories, paymentModes, types }) => {
+  const isEditing = !!editingTransaction;
+
   const [form, setForm] = useState({
     date: '',
     description: '',
@@ -24,9 +38,28 @@ export const AddTransactionModal = ({ isOpen, onClose, onAdd, categories, paymen
   });
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (isOpen) {
+      if (editingTransaction) {
+        setForm({
+          date: formattedToInput(editingTransaction.date),
+          description: editingTransaction.description,
+          category: editingTransaction.category,
+          amount: String(editingTransaction.amount),
+          paymentMode: editingTransaction.paymentMode,
+          type: editingTransaction.type,
+          notes: editingTransaction.notes || '',
+        });
+      } else {
+        setForm({ date: '', description: '', category: categories[0]?.id || '', amount: '', paymentMode: 'UPI', type: 'Need', notes: '' });
+      }
+      setError('');
+    }
+  }, [isOpen, editingTransaction, categories]);
+
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.date || !form.description || !form.amount) {
       setError('Date, Description and Amount are required');
@@ -37,17 +70,20 @@ export const AddTransactionModal = ({ isOpen, onClose, onAdd, categories, paymen
       setError('Please enter a valid amount');
       return;
     }
-    onAdd({
+    const payload = {
       date: toFormattedDate(form.date),
       description: form.description.trim(),
       category: form.category,
       amount,
       paymentMode: form.paymentMode,
       type: form.type,
-      notes: form.notes.trim() || '-',
-    });
-    setForm({ date: '', description: '', category: categories[0]?.id || '', amount: '', paymentMode: 'UPI', type: 'Need', notes: '' });
-    setError('');
+      notes: form.notes.trim() || '',
+    };
+    if (isEditing && onUpdate) {
+      await onUpdate(editingTransaction.id, payload);
+    } else {
+      await onAdd(payload);
+    }
     onClose();
   };
 
@@ -61,11 +97,11 @@ export const AddTransactionModal = ({ isOpen, onClose, onAdd, categories, paymen
         <div className="flex items-center justify-between px-6 py-4 border-b border-dark-100">
           <div className="flex items-center gap-3">
             <span className="bg-primary-100 text-primary-700 p-2.5 rounded-xl">
-              <Plus className="w-5 h-5" />
+              {isEditing ? <Save className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
             </span>
             <div>
-              <h2 className="text-lg font-semibold text-dark-900">Add Transaction</h2>
-              <p className="text-xs text-dark-500">Record a new expense, saving or spend</p>
+              <h2 className="text-lg font-semibold text-dark-900">{isEditing ? 'Edit Transaction' : 'Add Transaction'}</h2>
+              <p className="text-xs text-dark-500">{isEditing ? 'Update the transaction details' : 'Record a new expense, saving or spend'}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 rounded-xl hover:bg-dark-100 transition-colors text-dark-500" aria-label="Close">
@@ -149,7 +185,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAdd, categories, paymen
             <label className={labelClass}>
               <Wallet className="w-3.5 h-3.5 inline mr-1 text-dark-400" /> Payment Mode
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {paymentModes.map((mode) => (
                 <button
                   key={mode.id}
@@ -189,8 +225,8 @@ export const AddTransactionModal = ({ isOpen, onClose, onAdd, categories, paymen
               Cancel
             </button>
             <button type="submit" className="btn-primary flex-1">
-              <ArrowDownCircle className="w-4 h-4" />
-              Add Transaction
+              {isEditing ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              {isEditing ? 'Save Changes' : 'Add Transaction'}
             </button>
           </div>
         </form>

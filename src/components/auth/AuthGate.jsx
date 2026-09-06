@@ -1,30 +1,39 @@
-import { useState } from 'react';
-
-const CORRECT_HASH = 'fb59698145d7b410916de1005435c557cc4fb0224bb9160e5f91fcdfed1b0b4f';
-
-async function sha256(message) {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
+import { useEffect, useState } from 'react';
 
 export const AuthGate = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    try { return sessionStorage.getItem('ft_auth') === '1'; }
-    catch { return false; }
-  });
+  const [status, setStatus] = useState('loading');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [showPw, setShowPw] = useState(false);
 
-  if (isAuthenticated) {
+  useEffect(() => {
+    fetch('/api/me', { credentials: 'include' })
+      .then((r) => r.json())
+      .then((d) => setStatus(d.authenticated ? 'authed' : 'guest'))
+      .catch(() => setStatus('guest'));
+  }, []);
+
+  if (status === 'loading') {
+    return (
+      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-gradient-to-br from-dark-900 via-dark-800 to-primary-950">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-emerald-600 animate-pulse-soft shadow-xl shadow-primary-500/30 flex items-center justify-center">
+          <span className="text-xl text-white">₹</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'authed') {
     return (
       <>
         {children}
         <button
-          onClick={() => { sessionStorage.removeItem('ft_auth'); setIsAuthenticated(false); }}
+          onClick={async () => {
+            try { await fetch('/api/logout', { method: 'POST', credentials: 'include' }); } catch {}
+            setStatus('guest');
+            setPassword('');
+          }}
           className="fixed bottom-6 right-6 z-[100] bg-dark-800/80 backdrop-blur-xl text-white/80 hover:text-white px-4 py-2.5 rounded-full text-xs font-medium shadow-xl border border-white/10 transition-all hover:bg-dark-900 hover:scale-105"
         >
           🔒 Lock
@@ -35,21 +44,26 @@ export const AuthGate = ({ children }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!password.trim()) return setError('Enter a password');
-    setLoading(true);
+    if (!password.trim()) { setError('Enter a password'); return; }
+    setSubmitting(true);
     setError('');
     try {
-      const hash = await sha256(password.trim());
-      if (hash === CORRECT_HASH) {
-        sessionStorage.setItem('ft_auth', '1');
-        setIsAuthenticated(true);
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: password.trim() }),
+        credentials: 'include',
+      });
+      if (res.ok) {
+        setStatus('authed');
+        setPassword('');
       } else {
         setError('Wrong password — try again');
       }
     } catch {
-      setError('Something went wrong');
+      setError('Cannot reach the server');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -76,7 +90,7 @@ export const AuthGate = ({ children }) => {
               <input
                 type={showPw ? 'text' : 'password'}
                 value={password}
-                onChange={e => { setPassword(e.target.value); setError(''); }}
+                onChange={(e) => { setPassword(e.target.value); setError(''); }}
                 placeholder="Password"
                 autoFocus
                 className="w-full bg-white/10 border border-white/10 text-white placeholder-white/30 rounded-xl px-4 py-3 pr-10 text-sm outline-none focus:ring-2 focus:ring-primary-500/50 transition-all"
@@ -98,14 +112,14 @@ export const AuthGate = ({ children }) => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={submitting}
               className="w-full bg-gradient-to-r from-primary-500 to-emerald-600 hover:from-primary-600 hover:to-emerald-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 disabled:opacity-50 active:scale-[0.98]"
             >
-              {loading ? 'Checking...' : 'Enter'}
+              {submitting ? 'Checking...' : 'Enter'}
             </button>
           </form>
 
-          <p className="text-center text-white/20 text-xs mt-6">Client-side only · Data never leaves this browser</p>
+          <p className="text-center text-white/20 text-xs mt-6">Password verified on the server</p>
         </div>
       </div>
     </div>

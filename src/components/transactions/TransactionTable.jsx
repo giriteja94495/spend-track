@@ -3,12 +3,12 @@
 import { useState, useMemo } from 'react';
 import { 
   Search, Filter, ChevronUp, ChevronDown, ChevronLeft, ChevronRight,
-  Calendar, CreditCard, Tag, DollarSign, MoreHorizontal
+  Calendar, CreditCard, Tag, DollarSign, Pencil, Trash2
 } from 'lucide-react';
 import { formatCurrency, parseDate, getCategoryInfo, getPaymentModeInfo, getTypeInfo } from '../../utils/helpers';
 import { filterTransactions, sortTransactions } from '../../utils/helpers';
 
-export const TransactionTable = ({ transactions, categories, paymentModes, types }) => {
+export const TransactionTable = ({ transactions, categories, paymentModes, types, onEdit, onDelete }) => {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -172,7 +172,7 @@ export const TransactionTable = ({ transactions, categories, paymentModes, types
                 </th>
               ))}
               <th className="px-4 py-3 text-right font-medium text-dark-500 uppercase tracking-wider text-xs">
-                <MoreHorizontal className="w-4 h-4 mx-auto text-dark-300" />
+                Actions
               </th>
             </tr>
           </thead>
@@ -231,7 +231,26 @@ export const TransactionTable = ({ transactions, categories, paymentModes, types
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <MoreHorizontal className="w-4 h-4 mx-auto text-dark-300 hover:text-dark-500 transition-colors" />
+                    <div className="flex items-center justify-end gap-1.5">
+                      {onEdit && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onEdit(txn); }}
+                          className="p-1.5 rounded-lg text-dark-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                          aria-label="Edit transaction"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onDelete(txn); }}
+                          className="p-1.5 rounded-lg text-dark-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                          aria-label="Delete transaction"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))

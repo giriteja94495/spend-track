@@ -13,11 +13,37 @@ export const parseDate = (dateStr) => {
 };
 
 export const formatCurrency = (amount) => {
+  const isWhole = Math.round(amount) === amount;
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    maximumFractionDigits: 0,
+    minimumFractionDigits: isWhole ? 0 : 2,
+    maximumFractionDigits: isWhole ? 0 : 2,
   }).format(amount);
+};
+
+export const getAvailableMonths = (transactions) => {
+  const seen = {};
+  transactions.forEach(t => {
+    const d = parseDate(t.date);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    seen[key] = true;
+  });
+  return Object.keys(seen).sort((a, b) => b.localeCompare(a));
+};
+
+export const monthLabel = (monthKey) => {
+  if (!monthKey) return '';
+  const [year, month] = monthKey.split('-');
+  return new Date(year, month - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+};
+
+export const filterByMonth = (transactions, monthKey) => {
+  if (!monthKey || monthKey === 'all') return transactions;
+  return transactions.filter(t => {
+    const d = parseDate(t.date);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}` === monthKey;
+  });
 };
 
 export const formatNumber = (num) => {
